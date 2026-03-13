@@ -14,7 +14,6 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* canvas يغطي كامل الشاشة */
 canvas {
   display: block;
   position: absolute;
@@ -25,7 +24,6 @@ canvas {
   z-index: 1;
 }
 
-/* العنوان */
 h1 {
   position: absolute;
   top: 8%;
@@ -42,7 +40,8 @@ h1 {
   animation: fadeInSlide 2s forwards;
 }
 
-/* الرسالة التفاعلية مع تمرير */
+@keyframes fadeInSlide { 0% { opacity:0; transform:translate(-50%, -60%);} 100% {opacity:1; transform:translate(-50%, -50%);} }
+
 .message {
   position: absolute;
   top: 20%;
@@ -50,7 +49,7 @@ h1 {
   transform: translateX(-50%);
   width: 90%;
   max-width: 500px;
-  max-height: 60%; /* يسمح بالتمرير داخل الرسالة */
+  max-height: 60%;
   overflow-y: auto;
   font-size: 4.5vw; 
   line-height: 1.6;
@@ -63,14 +62,11 @@ h1 {
   opacity: 0;
   animation: fadeInSlideText 3s forwards;
   animation-delay: 1s;
-  -webkit-overflow-scrolling: touch; /* تمرير سلس على iOS */
+  -webkit-overflow-scrolling: touch;
 }
 
-/* حركة دخول العنوان والنص */
-@keyframes fadeInSlide { 0% { opacity:0; transform:translate(-50%, -60%);} 100% {opacity:1; transform:translate(-50%, -50%);} }
 @keyframes fadeInSlideText { 0% { opacity:0; transform:translate(-50%, 20%);} 100% {opacity:1; transform:translate(-50%, 0);} }
 
-/* تحسين النصوص على الشاشات الصغيرة جدًا */
 @media screen and (max-width: 400px) {
   h1 { font-size: 8vw; top: 8%; }
   .message { font-size: 5vw; top: 18%; max-height: 65%; }
@@ -91,7 +87,6 @@ Bütün arzularının həyata keçməsini və hər zaman gülümsəyən biri olm
 Hər il ad günün mübarək olsun! 🎉💫
 </div>
 
-<!-- الموسيقى -->
 <audio id="music" loop>
   <source src="https://wail302.github.io/Vugar37/music.mp3" type="audio/mpeg">
 </audio>
@@ -102,12 +97,9 @@ Hər il ad günün mübarək olsun! 🎉💫
 const music = document.getElementById("music");
 music.volume = 0.8;
 
-// التشغيل بعد التفاعل الأول لأن iOS/Chrome يمنع التشغيل التلقائي
-function startMusic() {
-    music.play().catch(()=>{});
+function playMusicIfNotStarted() {
+    if(music.paused) music.play().catch(()=>{});
 }
-document.addEventListener("click", startMusic, {once:true});
-document.addEventListener("touchstart", startMusic, {once:true});
 
 // الألعاب النارية
 const PI2 = Math.PI*2;
@@ -117,39 +109,32 @@ const timestamp = ()=>new Date().getTime();
 class Birthday {
   constructor(){
     this.resize();
-    this.fireworks=[]; this.counter=0;
+    this.fireworks=[]; 
+    this.counter=0;
   }
   resize(){
     this.width = canvas.width = window.innerWidth;
+    this.height = canvas.height = window.innerHeight;
     let center = this.width/2|0;
     this.spawnA = center - center/4|0;
     this.spawnB = center + center/4|0;
-    this.height = canvas.height = window.innerHeight;
-    this.spawnC = this.height * .1;
-    this.spawnD = this.height * .5;
+    this.spawnC = this.height * 0.1;
+    this.spawnD = this.height * 0.5;
   }
   onClick(evt){
-    let x = evt.clientX || evt.touches[0].clientX;
-    let y = evt.clientY || evt.touches[0].clientY;
-    let count=random(3,5);
-    for(let i=0;i<count;i++)
-      this.fireworks.push(new Firework(
-        random(this.spawnA,this.spawnB),
-        this.height,
-        x,
-        y,
-        random(0,260),
-        random(30,110)
-      ));
-    this.counter=-1;
+    // عند الضغط، نبدأ الموسيقى فقط
+    playMusicIfNotStarted();
   }
   update(delta){
     ctx.globalCompositeOperation='hard-light';
     ctx.fillStyle=`rgba(20,20,20,${7*delta})`;
     ctx.fillRect(0,0,this.width,this.height);
+
     ctx.globalCompositeOperation='lighter';
     for(let f of this.fireworks) f.update(delta);
-    this.counter += delta*3;
+
+    // زيادة الألعاب النارية بنسبة 20%
+    this.counter += delta*3*1.2; // 20% زيادة
     if(this.counter>=1){
       this.fireworks.push(new Firework(
         random(this.spawnA,this.spawnB),
@@ -161,7 +146,8 @@ class Birthday {
       ));
       this.counter=0;
     }
-    if(this.fireworks.length>1000)
+
+    if(this.fireworks.length>1200)
       this.fireworks=this.fireworks.filter(f=>!f.dead);
   }
 }
