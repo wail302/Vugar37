@@ -10,8 +10,10 @@ body {
   overflow:hidden;
   font-family:Arial;
   color:white;
+  cursor:crosshair;
 }
 
+/* canvas يغطي كامل الشاشة */
 canvas {
   position:absolute;
   top:0;
@@ -21,16 +23,17 @@ canvas {
   z-index:1;
 }
 
+/* العنوان */
 h1 {
   position:absolute;
-  top:12%;
+  top:10%;
   left:50%;
   transform:translate(-50%,-50%);
   font-weight:bold;
   z-index:10;
   opacity:0;
   animation:fadeTitle 2s forwards;
-  font-size:16vw;
+  font-size:10vw; /* تكبير العنوان للجوال */
   text-align:center;
 }
 
@@ -39,9 +42,10 @@ h1 {
   100% { opacity:1; transform:translate(-50%,-50%); }
 }
 
+/* رسالة التهنئة */
 .message {
   position:absolute;
-  top:35%;
+  top:25%;
   left:50%;
   transform:translateX(-50%);
   width:90%;
@@ -50,7 +54,7 @@ h1 {
   opacity:0;
   animation:fadeText 3s forwards;
   animation-delay:1s;
-  font-size:9vw;
+  font-size:6vw; /* تكبير النص للجوال */
   line-height:1.8;
 }
 
@@ -59,9 +63,10 @@ h1 {
   100% { opacity:1; transform:translate(-50%,0); }
 }
 
+/* تحسين إضافي إذا الشاشة صغيرة جدًا */
 @media screen and (max-width:400px){
-  h1 { font-size:18vw; top:10%; }
-  .message { font-size:10vw; top:30%; }
+  h1 { font-size:12vw; top:12%; }
+  .message { font-size:7vw; top:28%; }
 }
 </style>
 </head>
@@ -79,31 +84,24 @@ Hər zaman xoşbəxt olmağını diləyirəm.<br><br>
 Ad günün mübarək! 🎆
 </div>
 
-<audio id="music" loop>
+<audio id="music">
   <source src="https://wail302.github.io/Vugar37/music.mp3" type="audio/mpeg">
 </audio>
 
 <canvas id="birthday"></canvas>
 
 <script>
-// موسيقى تلقائية محسنة للجوال
 const music = document.getElementById("music");
-music.volume = 0.5;  // مستوى منخفض لتسهيل التشغيل التلقائي
-music.muted = true;  // البداية بدون صوت لإجبار المتصفح على السماح بالتشغيل
-music.play().then(()=>{ 
-  music.muted=false; // تشغيل الصوت بعد البداية
-}).catch(()=>{ 
-  // fallback إذا لم تسمح المتصفحات
-  document.addEventListener("click", ()=>{ 
-    music.play().catch(()=>{}); 
-  }, {once:true});
-});
+music.volume = 0.8;
 
-// الألعاب النارية
+// تشغيل الصوت بعد أول نقرة للجوال/Chrome
+document.addEventListener("click", ()=>{ music.play().catch(()=>{}); }, {once:true});
+
 const PI2=Math.PI*2;
 const random=(min,max)=>Math.random()*(max-min+1)+min|0;
 const timestamp=()=>new Date().getTime();
 
+// كلاس الألعاب النارية
 class Birthday{
   constructor(){ this.resize(); this.fireworks=[]; this.counter=0; }
   resize(){
@@ -114,6 +112,21 @@ class Birthday{
     this.spawnB=center+center/4|0;
     this.spawnC=this.height*0.1;
     this.spawnD=this.height*0.5;
+  }
+  onClick(evt){
+    let x = evt.clientX || evt.touches[0].clientX;
+    let y = evt.clientY || evt.touches[0].clientY;
+    let count=random(3,5);
+    for(let i=0;i<count;i++)
+      this.fireworks.push(new Firework(
+        random(this.spawnA,this.spawnB),
+        this.height,
+        x,
+        y,
+        random(0,260),
+        random(30,110)
+      ));
+    this.counter=-1;
   }
   update(delta){
     ctx.globalCompositeOperation='hard-light';
@@ -141,8 +154,8 @@ class Birthday{
 class Firework{
   constructor(x,y,targetX,targetY,shade,offsprings){
     this.dead=false; this.offsprings=offsprings;
-    this.x=x; this.y=y; this.targetX=targetX; this.targetY=targetY;
-    this.shade=shade; this.history=[];
+    this.x=x; this.y=y; this.targetX=targetX; this.targetY=targetY; this.shade=shade;
+    this.history=[];
   }
   update(delta){
     if(this.dead) return;
@@ -167,15 +180,8 @@ let ctx=canvas.getContext("2d");
 let then=timestamp();
 let birthday=new Birthday();
 window.onresize=()=>birthday.resize();
+document.onclick=evt=>birthday.onClick(evt);
+document.ontouchstart=evt=>birthday.onClick(evt);
 
 (function loop(){
   requestAnimationFrame(loop);
-  let now=timestamp();
-  let delta=now-then;
-  then=now;
-  birthday.update(delta/1000);
-})();
-</script>
-
-</body>
-</html>
