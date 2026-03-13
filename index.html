@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Ad Günün Mübarək Vugar 🎂🎆</title>
-
 <style>
-body{
+body {
   margin:0;
   background:#020202;
   overflow:hidden;
@@ -14,7 +13,7 @@ body{
   cursor:crosshair;
 }
 
-canvas{
+canvas {
   position:absolute;
   top:0;
   left:0;
@@ -23,47 +22,50 @@ canvas{
   z-index:1;
 }
 
-h1{
+h1 {
   position:absolute;
   top:10%;
   left:50%;
   transform:translate(-50%,-50%);
-  font-size:5vw;
-  text-align:center;
   font-weight:bold;
   z-index:10;
   opacity:0;
   animation:fadeTitle 2s forwards;
+  font-size:10vw; /* تكبير العنوان للجوال */
+  text-align:center;
 }
 
-@keyframes fadeTitle{
-0%{opacity:0; transform:translate(-50%,-80%)}
-100%{opacity:1; transform:translate(-50%,-50%)}
+@keyframes fadeTitle {
+  0% { opacity:0; transform:translate(-50%,-80%); }
+  100% { opacity:1; transform:translate(-50%,-50%); }
 }
 
-.message{
+.message {
   position:absolute;
   top:25%;
   left:50%;
   transform:translateX(-50%);
   width:90%;
-  max-width:550px;
   text-align:center;
-  font-size:20px;
-  line-height:1.7;
   z-index:10;
   opacity:0;
   animation:fadeText 3s forwards;
   animation-delay:1s;
+  font-size:6vw; /* تكبير النص للجوال */
+  line-height:1.8;
 }
 
-@keyframes fadeText{
-0%{opacity:0; transform:translate(-50%,50px)}
-100%{opacity:1; transform:translate(-50%,0)}
+@keyframes fadeText {
+  0% { opacity:0; transform:translate(-50%,50px); }
+  100% { opacity:1; transform:translate(-50%,0); }
+}
+
+@media screen and (max-width:400px){
+  h1 { font-size:12vw; top:12%; }
+  .message { font-size:7vw; top:28%; }
 }
 </style>
 </head>
-
 <body>
 
 <h1>Ad Günün Mübarək Vugar 🎂✨🎉</h1>
@@ -71,59 +73,50 @@ h1{
 <div class="message">
 Əziz qardaşım və dostum Vüqar,<br><br>
 Ad günün mübarək! 🎉<br><br>
-🎂 Bu gözəl gündə sənə sonsuz xoşbəxtlik, uğur və sevinc arzulayıram.<br><br>
+🎂 Bu gözəl gündə sənə sonsuz xoşbəxtlik və uğur arzulayıram.<br><br>
 Sən mənim üçün sadəcə dost deyilsən, sən talenin seçdiyi qardaşsan.<br><br>
 Bu xüsusi gündə yanında ola bilmədiyim üçün üzr istəyirəm.<br><br>
 Hər zaman xoşbəxt olmağını diləyirəm.<br><br>
 Ad günün mübarək! 🎆
 </div>
 
-<!-- الموسيقى -->
-<audio id="music">
-  <source src="https://raw.githubusercontent.com/wail302/Vugar37/main/Music.mp3" type="audio/mpeg">
+<audio id="music" autoplay loop>
+  <source src="https://wail302.github.io/Vugar37/music.mp3" type="audio/mpeg">
 </audio>
 
 <canvas id="birthday"></canvas>
 
 <script>
-// الموسيقى بعد أول نقرة
+// الموسيقى
 const music = document.getElementById("music");
 music.volume = 0.8;
 
-function playAudio() {
-    music.play().catch(()=>{});
-}
-
-// التشغيل بعد أول نقرة لتجاوز قيود المتصفحات
-document.addEventListener("click", playAudio, { once: true });
+// محاولة التشغيل التلقائي، وإذا لم يسمح المتصفح، تشغيل بعد أول نقرة
+music.play().catch(()=>{
+  document.addEventListener("click", ()=>{ music.play().catch(()=>{}); }, {once:true});
+});
 
 // الألعاب النارية
-const PI2 = Math.PI*2;
-const random = (min,max)=>Math.random()*(max-min+1)+min|0;
-const timestamp = ()=>new Date().getTime();
+const PI2=Math.PI*2;
+const random=(min,max)=>Math.random()*(max-min+1)+min|0;
+const timestamp=()=>new Date().getTime();
 
 class Birthday{
-  constructor(){
-    this.resize();
-    this.fireworks=[];
-    this.counter=0;
-  }
-
+  constructor(){ this.resize(); this.fireworks=[]; this.counter=0; }
   resize(){
-    this.width = canvas.width = window.innerWidth;
-    this.height = canvas.height = window.innerHeight;
+    this.width=canvas.width=window.innerWidth;
+    this.height=canvas.height=window.innerHeight;
     let center=this.width/2|0;
     this.spawnA=center-center/4|0;
     this.spawnB=center+center/4|0;
     this.spawnC=this.height*0.1;
     this.spawnD=this.height*0.5;
   }
-
   onClick(evt){
     let x = evt.clientX || evt.touches[0].clientX;
     let y = evt.clientY || evt.touches[0].clientY;
     let count=random(3,5);
-    for(let i=0;i<count;i++){
+    for(let i=0;i<count;i++)
       this.fireworks.push(new Firework(
         random(this.spawnA,this.spawnB),
         this.height,
@@ -132,19 +125,15 @@ class Birthday{
         random(0,260),
         random(30,110)
       ));
-    }
     this.counter=-1;
   }
-
   update(delta){
     ctx.globalCompositeOperation='hard-light';
     ctx.fillStyle=`rgba(20,20,20,${7*delta})`;
     ctx.fillRect(0,0,this.width,this.height);
     ctx.globalCompositeOperation='lighter';
-    for(let f of this.fireworks){
-      f.update(delta);
-    }
-    this.counter += delta*3;
+    for(let f of this.fireworks) f.update(delta);
+    this.counter+=delta*3;
     if(this.counter>=1){
       this.fireworks.push(new Firework(
         random(this.spawnA,this.spawnB),
@@ -163,37 +152,19 @@ class Birthday{
 
 class Firework{
   constructor(x,y,targetX,targetY,shade,offsprings){
-    this.dead=false;
-    this.offsprings=offsprings;
-    this.x=x; this.y=y;
-    this.targetX=targetX; this.targetY=targetY;
-    this.shade=shade;
+    this.dead=false; this.offsprings=offsprings;
+    this.x=x; this.y=y; this.targetX=targetX; this.targetY=targetY; this.shade=shade;
     this.history=[];
   }
-
   update(delta){
     if(this.dead) return;
     let xDiff=this.targetX-this.x;
     let yDiff=this.targetY-this.y;
-    if(Math.abs(xDiff)>3 || Math.abs(yDiff)>3){
-      this.x += xDiff*2*delta;
-      this.y += yDiff*2*delta;
+    if(Math.abs(xDiff)>3||Math.abs(yDiff)>3){
+      this.x+=xDiff*2*delta; this.y+=yDiff*2*delta;
       this.history.push({x:this.x,y:this.y});
       if(this.history.length>20) this.history.shift();
-    } else {
-      if(this.offsprings && !this.madeChilds){
-        let babies=this.offsprings/2;
-        for(let i=0;i<babies;i++){
-          let tx = this.x + this.offsprings*Math.cos(PI2*i/babies)|0;
-          let ty = this.y + this.offsprings*Math.sin(PI2*i/babies)|0;
-          birthday.fireworks.push(new Firework(this.x,this.y,tx,ty,this.shade,0));
-        }
-      }
-      this.madeChilds=true;
-      this.history.shift();
-    }
-
-    if(this.history.length===0) this.dead=true;
+    } else this.dead=true;
     for(let p of this.history){
       ctx.beginPath();
       ctx.fillStyle='hsl('+this.shade+',100%,50%)';
@@ -207,10 +178,9 @@ let canvas=document.getElementById("birthday");
 let ctx=canvas.getContext("2d");
 let then=timestamp();
 let birthday=new Birthday();
-
-window.onresize = ()=>birthday.resize();
-document.onclick = evt=>birthday.onClick(evt);
-document.ontouchstart = evt=>birthday.onClick(evt);
+window.onresize=()=>birthday.resize();
+document.onclick=evt=>birthday.onClick(evt);
+document.ontouchstart=evt=>birthday.onClick(evt);
 
 (function loop(){
   requestAnimationFrame(loop);
