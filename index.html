@@ -28,7 +28,7 @@ canvas {
 /* العنوان */
 h1 {
   position: absolute;
-  top: 10%;
+  top: 8%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: #fff;
@@ -42,49 +42,44 @@ h1 {
   animation: fadeInSlide 2s forwards;
 }
 
-/* حركة دخول النصوص */
-@keyframes fadeInSlide {
-  0% { opacity: 0; transform: translate(-50%, -60%); }
-  100% { opacity: 1; transform: translate(-50%, -50%); }
-}
-
-/* رسالة الاعتذار والتهنئة */
+/* الرسالة التفاعلية مع تمرير */
 .message {
   position: absolute;
-  top: 25%;
+  top: 20%;
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translateX(-50%);
   width: 90%;
   max-width: 500px;
-  font-size: 4vw; 
+  max-height: 60%; /* يسمح بالتمرير داخل الرسالة */
+  overflow-y: auto;
+  font-size: 4.5vw; 
   line-height: 1.6;
   text-align: center;
   color: white;
   z-index: 10;
+  background: rgba(0,0,0,0.2);
+  padding: 10px;
+  border-radius: 10px;
   opacity: 0;
   animation: fadeInSlideText 3s forwards;
   animation-delay: 1s;
+  -webkit-overflow-scrolling: touch; /* تمرير سلس على iOS */
 }
 
-/* حركة دخول الرسالة */
-@keyframes fadeInSlideText {
-  0% { opacity: 0; transform: translate(-50%, 20%); }
-  100% { opacity: 1; transform: translate(-50%, 0); }
-}
+/* حركة دخول العنوان والنص */
+@keyframes fadeInSlide { 0% { opacity:0; transform:translate(-50%, -60%);} 100% {opacity:1; transform:translate(-50%, -50%);} }
+@keyframes fadeInSlideText { 0% { opacity:0; transform:translate(-50%, 20%);} 100% {opacity:1; transform:translate(-50%, 0);} }
 
-/* تحسين النصوص على شاشات صغيرة جدًا */
+/* تحسين النصوص على الشاشات الصغيرة جدًا */
 @media screen and (max-width: 400px) {
   h1 { font-size: 8vw; top: 8%; }
-  .message { font-size: 5vw; top: 22%; }
+  .message { font-size: 5vw; top: 18%; max-height: 65%; }
 }
 </style>
 </head>
-
 <body>
 
-<h1>
-Ad Günün Mübarək Vugar 🎂✨🎉🎆
-</h1>
+<h1>Ad Günün Mübarək Vugar 🎂✨🎉🎆</h1>
 
 <div class="message">
 Əziz qardaşım və dostum Vüqar,<br><br>
@@ -104,17 +99,15 @@ Hər il ad günün mübarək olsun! 🎉💫
 <canvas id="birthday"></canvas>
 
 <script>
-// الموسيقى تلقائي
 const music = document.getElementById("music");
 music.volume = 0.8;
 
-// محاولة التشغيل التلقائي: إذا منع المتصفح، التشغيل بعد أول نقرة أو لمس
-function playMusic() {
-    music.play().catch(()=>{ /* متصفح منع التشغيل */ });
+// التشغيل بعد التفاعل الأول لأن iOS/Chrome يمنع التشغيل التلقائي
+function startMusic() {
+    music.play().catch(()=>{});
 }
-document.addEventListener("DOMContentLoaded", playMusic);
-document.addEventListener("click", playMusic, {once:true});
-document.addEventListener("touchstart", playMusic, {once:true});
+document.addEventListener("click", startMusic, {once:true});
+document.addEventListener("touchstart", startMusic, {once:true});
 
 // الألعاب النارية
 const PI2 = Math.PI*2;
@@ -175,8 +168,10 @@ class Birthday {
 
 class Firework {
   constructor(x,y,targetX,targetY,shade,offsprings){
-    this.dead=false; this.offsprings=offsprings;
-    this.x=x; this.y=y; this.targetX=targetX; this.targetY=targetY;
+    this.dead=false;
+    this.offsprings=offsprings;
+    this.x=x; this.y=y;
+    this.targetX=targetX; this.targetY=targetY;
     this.shade=shade; this.history=[];
   }
   update(delta){
