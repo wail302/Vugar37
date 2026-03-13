@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="az">
-
 <head>
 <meta charset="UTF-8">
 <title>Ad Günün Mübarək Vugar 🎂🎆</title>
@@ -80,25 +79,25 @@ Ad günün mübarək! 🎆
 </div>
 
 <!-- الموسيقى -->
-<audio id="music" autoplay>
-  <source src="https://raw.githubusercontent.com/wail302/Vugar37/main/music.mp3" type="audio/mpeg">
+<audio id="music">
+  <source src="Music.mp3" type="audio/mpeg">
 </audio>
 
 <canvas id="birthday"></canvas>
 
 <script>
-window.addEventListener("load", () => {
-  const music = document.getElementById("music");
-  music.volume = 0.8;
+// الموسيقى بعد أول نقرة
+const music = document.getElementById("music");
+music.volume = 0.8;
 
-  const playAudio = () => {
-    music.play().catch(() => {});
-  };
+function playAudio() {
+    music.play().catch(()=>{});
+}
 
-  playAudio();
-  document.addEventListener("click", playAudio);
-});
+// التشغيل بعد أول نقرة لتجاوز قيود المتصفحات
+document.addEventListener("click", playAudio, { once: true });
 
+// الألعاب النارية
 const PI2 = Math.PI*2;
 const random = (min,max)=>Math.random()*(max-min+1)+min|0;
 const timestamp = ()=>new Date().getTime();
@@ -113,11 +112,9 @@ class Birthday{
   resize(){
     this.width = canvas.width = window.innerWidth;
     this.height = canvas.height = window.innerHeight;
-
     let center=this.width/2|0;
     this.spawnA=center-center/4|0;
     this.spawnB=center+center/4|0;
-
     this.spawnC=this.height*0.1;
     this.spawnD=this.height*0.5;
   }
@@ -143,12 +140,10 @@ class Birthday{
     ctx.globalCompositeOperation='hard-light';
     ctx.fillStyle=`rgba(20,20,20,${7*delta})`;
     ctx.fillRect(0,0,this.width,this.height);
-
     ctx.globalCompositeOperation='lighter';
     for(let f of this.fireworks){
       f.update(delta);
     }
-
     this.counter += delta*3;
     if(this.counter>=1){
       this.fireworks.push(new Firework(
@@ -161,7 +156,6 @@ class Birthday{
       ));
       this.counter=0;
     }
-
     if(this.fireworks.length>1000)
       this.fireworks=this.fireworks.filter(f=>!f.dead);
   }
@@ -179,10 +173,8 @@ class Firework{
 
   update(delta){
     if(this.dead) return;
-
     let xDiff=this.targetX-this.x;
     let yDiff=this.targetY-this.y;
-
     if(Math.abs(xDiff)>3 || Math.abs(yDiff)>3){
       this.x += xDiff*2*delta;
       this.y += yDiff*2*delta;
@@ -202,7 +194,6 @@ class Firework{
     }
 
     if(this.history.length===0) this.dead=true;
-
     for(let p of this.history){
       ctx.beginPath();
       ctx.fillStyle='hsl('+this.shade+',100%,50%)';
