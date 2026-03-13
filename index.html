@@ -13,7 +13,6 @@ body {
   cursor:crosshair;
 }
 
-/* canvas يغطي كامل الشاشة */
 canvas {
   position:absolute;
   top:0;
@@ -23,7 +22,6 @@ canvas {
   z-index:1;
 }
 
-/* العنوان */
 h1 {
   position:absolute;
   top:10%;
@@ -42,7 +40,6 @@ h1 {
   100% { opacity:1; transform:translate(-50%,-50%); }
 }
 
-/* رسالة التهنئة */
 .message {
   position:absolute;
   top:25%;
@@ -63,7 +60,6 @@ h1 {
   100% { opacity:1; transform:translate(-50%,0); }
 }
 
-/* تحسين إضافي إذا الشاشة صغيرة جدًا */
 @media screen and (max-width:400px){
   h1 { font-size:12vw; top:12%; }
   .message { font-size:7vw; top:28%; }
@@ -84,24 +80,27 @@ Hər zaman xoşbəxt olmağını diləyirəm.<br><br>
 Ad günün mübarək! 🎆
 </div>
 
-<audio id="music">
+<audio id="music" autoplay loop>
   <source src="https://wail302.github.io/Vugar37/music.mp3" type="audio/mpeg">
 </audio>
 
 <canvas id="birthday"></canvas>
 
 <script>
+// الموسيقى
 const music = document.getElementById("music");
 music.volume = 0.8;
 
-// تشغيل الصوت بعد أول نقرة للجوال/Chrome
-document.addEventListener("click", ()=>{ music.play().catch(()=>{}); }, {once:true});
+// محاولة التشغيل التلقائي، وإذا لم يسمح المتصفح، تشغيل بعد أول نقرة
+music.play().catch(()=>{
+  document.addEventListener("click", ()=>{ music.play().catch(()=>{}); }, {once:true});
+});
 
+// الألعاب النارية
 const PI2=Math.PI*2;
 const random=(min,max)=>Math.random()*(max-min+1)+min|0;
 const timestamp=()=>new Date().getTime();
 
-// كلاس الألعاب النارية
 class Birthday{
   constructor(){ this.resize(); this.fireworks=[]; this.counter=0; }
   resize(){
@@ -185,3 +184,12 @@ document.ontouchstart=evt=>birthday.onClick(evt);
 
 (function loop(){
   requestAnimationFrame(loop);
+  let now=timestamp();
+  let delta=now-then;
+  then=now;
+  birthday.update(delta/1000);
+})();
+</script>
+
+</body>
+</html>
