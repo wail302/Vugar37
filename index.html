@@ -4,16 +4,22 @@
 <meta charset="UTF-8">
 <title>Ad Günün Mübarək Vugar 🎂✨🎉🎆</title>
 
+<!-- تعطيل الكاش -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
+
 <style>
 body {
   margin: 0;
   background: #020202;
-  cursor: crosshair;
   overflow: hidden;
-  color: white;
   font-family: Arial, sans-serif;
+  color: white;
+  cursor: crosshair;
 }
 
+/* canvas يغطي كامل الشاشة */
 canvas {
   display: block;
   position: absolute;
@@ -24,6 +30,7 @@ canvas {
   z-index: 1;
 }
 
+/* العنوان */
 h1 {
   position: absolute;
   top: 8%;
@@ -33,46 +40,51 @@ h1 {
   font-weight: 900;
   text-align: center;
   user-select: none;
-  font-size: 6vw; 
+  font-size: 14vw; 
   line-height: 1.2;
   z-index: 10;
   opacity: 0;
   animation: fadeInSlide 2s forwards;
 }
 
-@keyframes fadeInSlide { 0% { opacity:0; transform:translate(-50%, -60%);} 100% {opacity:1; transform:translate(-50%, -50%);} }
+/* حركة دخول النصوص */
+@keyframes fadeInSlide {
+  0% { opacity: 0; transform: translate(-50%, -60%); }
+  100% { opacity: 1; transform: translate(-50%, -50%); }
+}
 
+/* رسالة التهنئة */
 .message {
   position: absolute;
-  top: 20%;
+  top: 28%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, 0);
   width: 90%;
   max-width: 500px;
-  max-height: 60%;
-  overflow-y: auto;
-  font-size: 4.5vw; 
-  line-height: 1.6;
+  font-size: 6vw; 
+  line-height: 1.5;
   text-align: center;
   color: white;
   z-index: 10;
-  background: rgba(0,0,0,0.2);
-  padding: 10px;
-  border-radius: 10px;
   opacity: 0;
   animation: fadeInSlideText 3s forwards;
   animation-delay: 1s;
-  -webkit-overflow-scrolling: touch;
 }
 
-@keyframes fadeInSlideText { 0% { opacity:0; transform:translate(-50%, 20%);} 100% {opacity:1; transform:translate(-50%, 0);} }
+/* حركة دخول الرسالة */
+@keyframes fadeInSlideText {
+  0% { opacity: 0; transform: translate(-50%, 20%); }
+  100% { opacity: 1; transform: translate(-50%, 0); }
+}
 
+/* تحسين النصوص على شاشات صغيرة جدًا */
 @media screen and (max-width: 400px) {
-  h1 { font-size: 8vw; top: 8%; }
-  .message { font-size: 5vw; top: 18%; max-height: 65%; }
+  h1 { font-size: 16vw; top: 6%; }
+  .message { font-size: 7vw; top: 18%; }
 }
 </style>
 </head>
+
 <body>
 
 <h1>Ad Günün Mübarək Vugar 🎂✨🎉🎆</h1>
@@ -87,8 +99,9 @@ Bütün arzularının həyata keçməsini və hər zaman gülümsəyən biri olm
 Hər il ad günün mübarək olsun! 🎉💫
 </div>
 
-<audio id="music" loop>
-  <source src="https://wail302.github.io/Vugar37/music.mp3" type="audio/mpeg">
+<!-- الموسيقى -->
+<audio id="music" autoplay loop>
+  <source src="https://wail302.github.io/Vugar37/music.mp3?v=1" type="audio/mpeg">
 </audio>
 
 <canvas id="birthday"></canvas>
@@ -97,9 +110,10 @@ Hər il ad günün mübarək olsun! 🎉💫
 const music = document.getElementById("music");
 music.volume = 0.8;
 
-function playMusicIfNotStarted() {
-    if(music.paused) music.play().catch(()=>{});
-}
+// محاولة التشغيل التلقائي، وإذا لم يسمح المتصفح، التشغيل بعد أول نقرة
+music.play().catch(()=> {
+  document.addEventListener("click", ()=> music.play(), {once:true});
+});
 
 // الألعاب النارية
 const PI2 = Math.PI*2;
@@ -109,7 +123,7 @@ const timestamp = ()=>new Date().getTime();
 class Birthday {
   constructor(){
     this.resize();
-    this.fireworks=[]; 
+    this.fireworks=[];
     this.counter=0;
   }
   resize(){
@@ -118,12 +132,12 @@ class Birthday {
     let center = this.width/2|0;
     this.spawnA = center - center/4|0;
     this.spawnB = center + center/4|0;
-    this.spawnC = this.height * 0.1;
-    this.spawnD = this.height * 0.5;
+    this.spawnC = this.height * .1;
+    this.spawnD = this.height * .5;
   }
   onClick(evt){
-    // عند الضغط، نبدأ الموسيقى فقط
-    playMusicIfNotStarted();
+    // بدل الضغط لا تنشئ ألعاب نارية، شغل الموسيقى إذا توقفت
+    if(music.paused) music.play().catch(()=>{});
   }
   update(delta){
     ctx.globalCompositeOperation='hard-light';
@@ -133,8 +147,8 @@ class Birthday {
     ctx.globalCompositeOperation='lighter';
     for(let f of this.fireworks) f.update(delta);
 
-    // زيادة الألعاب النارية بنسبة 20%
-    this.counter += delta*3*1.2; // 20% زيادة
+    // إضافة 20٪ زيادة على الألعاب النارية
+    this.counter += delta*3*1.2; 
     if(this.counter>=1){
       this.fireworks.push(new Firework(
         random(this.spawnA,this.spawnB),
@@ -147,7 +161,7 @@ class Birthday {
       this.counter=0;
     }
 
-    if(this.fireworks.length>1200)
+    if(this.fireworks.length>1000)
       this.fireworks=this.fireworks.filter(f=>!f.dead);
   }
 }
@@ -158,7 +172,9 @@ class Firework {
     this.offsprings=offsprings;
     this.x=x; this.y=y;
     this.targetX=targetX; this.targetY=targetY;
-    this.shade=shade; this.history=[];
+    this.shade=shade;
+    this.history=[];
+    this.madeChilds=false;
   }
   update(delta){
     if(this.dead) return;
@@ -170,12 +186,30 @@ class Firework {
       this.history.push({x:this.x,y:this.y});
       if(this.history.length>20) this.history.shift();
     } else {
-      this.dead=true;
+      if(this.offsprings && !this.madeChilds){
+        let babies=this.offsprings/2;
+        for(let i=0;i<babies;i++){
+          let tx = this.x + this.offsprings*Math.cos(PI2*i/babies)|0;
+          let ty = this.y + this.offsprings*Math.sin(PI2*i/babies)|0;
+          birthday.fireworks.push(new Firework(this.x,this.y,tx,ty,this.shade,0));
+        }
+      }
+      this.madeChilds=true;
+      this.history.shift();
     }
-    for(let p of this.history){
+    if(this.history.length===0) this.dead=true;
+    else if(this.offsprings){
+      for(let i=0;i<this.history.length;i++){
+        let p=this.history[i];
+        ctx.beginPath();
+        ctx.fillStyle='hsl('+this.shade+',100%,'+i+'%)';
+        ctx.arc(p.x,p.y,1,0,PI2);
+        ctx.fill();
+      }
+    } else {
       ctx.beginPath();
       ctx.fillStyle='hsl('+this.shade+',100%,50%)';
-      ctx.arc(p.x,p.y,2,0,PI2);
+      ctx.arc(this.x,this.y,1,0,PI2);
       ctx.fill();
     }
   }
@@ -185,6 +219,7 @@ let canvas=document.getElementById("birthday");
 let ctx=canvas.getContext("2d");
 let then=timestamp();
 let birthday=new Birthday();
+
 window.onresize=()=>birthday.resize();
 document.onclick=evt=>birthday.onClick(evt);
 document.ontouchstart=evt=>birthday.onClick(evt);
