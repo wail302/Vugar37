@@ -24,14 +24,14 @@ canvas {
 
 h1 {
   position:absolute;
-  top:10%;
+  top:12%;
   left:50%;
   transform:translate(-50%,-50%);
   font-weight:bold;
   z-index:10;
   opacity:0;
   animation:fadeTitle 2s forwards;
-  font-size:10vw; /* تكبير العنوان للجوال */
+  font-size:18vw; /* تكبير العنوان للجوال الكبير */
   text-align:center;
 }
 
@@ -42,7 +42,7 @@ h1 {
 
 .message {
   position:absolute;
-  top:25%;
+  top:35%;
   left:50%;
   transform:translateX(-50%);
   width:90%;
@@ -51,8 +51,8 @@ h1 {
   opacity:0;
   animation:fadeText 3s forwards;
   animation-delay:1s;
-  font-size:6vw; /* تكبير النص للجوال */
-  line-height:1.8;
+  font-size:10vw; /* تكبير النص للجوال الكبير */
+  line-height:1.9;
 }
 
 @keyframes fadeText {
@@ -60,9 +60,14 @@ h1 {
   100% { opacity:1; transform:translate(-50%,0); }
 }
 
+/* تحسين إضافي للشاشات الكبيرة جدًا */
+@media screen and (max-width:800px){
+  h1 { font-size:18vw; top:12%; }
+  .message { font-size:10vw; top:35%; }
+}
 @media screen and (max-width:400px){
-  h1 { font-size:12vw; top:12%; }
-  .message { font-size:7vw; top:28%; }
+  h1 { font-size:16vw; top:12%; }
+  .message { font-size:9vw; top:33%; }
 }
 </style>
 </head>
@@ -91,7 +96,7 @@ Ad günün mübarək! 🎆
 const music = document.getElementById("music");
 music.volume = 0.8;
 
-// محاولة التشغيل التلقائي، وإذا لم يسمح المتصفح، تشغيل بعد أول نقرة
+// تشغيل الصوت بعد أول نقرة إذا لم يسمح المتصفح بالتلقائي
 music.play().catch(()=>{
   document.addEventListener("click", ()=>{ music.play().catch(()=>{}); }, {once:true});
 });
@@ -153,7 +158,8 @@ class Birthday{
 class Firework{
   constructor(x,y,targetX,targetY,shade,offsprings){
     this.dead=false; this.offsprings=offsprings;
-    this.x=x; this.y=y; this.targetX=targetX; this.targetY=targetY; this.shade=shade;
+    this.x=x; this.y=y; this.targetX=targetX; this.targetY=targetY;
+    this.shade=shade;
     this.history=[];
   }
   update(delta){
